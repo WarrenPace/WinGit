@@ -18,3 +18,4 @@ $requiredModules = @('PowerShellGet') # Add or update required modules
 
 # Install required modules
 Install-RequiredModules -requiredModules $requiredModules
+
