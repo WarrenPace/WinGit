@@ -1,12 +1,11 @@
-# Check if running as Administrator
-if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-    Write-Host "This script must be run as an Administrator. Please rerun the script in an elevated context."
-    exit
-}
-
-# Check if running in PowerShell ISE
-if ($host.Name -eq "Windows PowerShell ISE Host") {
-    Write-Host "This script is not designed to run in PowerShell ISE. Please run it in a standard PowerShell console."
+# Relaunch the script with administrative rights if not already running as an administrator
+if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    try {
+        Start-Process PowerShell -ArgumentList "-File `"$PSCommandPath`"" -Verb RunAs
+    } catch {
+        Write-Warning "Failed to start script with administrative privileges."
+        exit
+    }
     exit
 }
 
@@ -17,6 +16,7 @@ foreach ($module in $requiredModules) {
         Install-Module -Name $module -Force -Scope CurrentUser
     }
 }
+
 
 # Function to write logs to a file
 function Write-Log {
