@@ -1,3 +1,15 @@
+# Check if running as Administrator
+if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Host "This script must be run as an Administrator. Please rerun the script in an elevated context."
+    exit
+}
+
+# Check if running in PowerShell ISE
+if ($host.Name -eq "Windows PowerShell ISE Host") {
+    Write-Host "This script is not designed to run in PowerShell ISE. Please run it in a standard PowerShell console."
+    exit
+}
+
 # Ensure required PowerShell modules are installed
 $requiredModules = @('WindowsSubsystemForLinux', 'PowerShellGet')
 foreach ($module in $requiredModules) {
@@ -5,10 +17,6 @@ foreach ($module in $requiredModules) {
         Install-Module -Name $module -Force -Scope CurrentUser
     }
 }
-
-# Import missing modules
-Import-Module -Name Microsoft.PowerShell.Management
-Import-Module -Name Microsoft.PowerShell.Utility
 
 # Function to write logs to a file
 function Write-Log {
