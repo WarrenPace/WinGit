@@ -71,6 +71,27 @@ function Move-WSLDistro {
     }
 }
 
+# Function to Uninstall and Completely Remove WSL
+function Uninstall-WSL {
+    try {
+        # Uninstall WSL feature
+        Disable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart
+        Write-Host "WSL feature has been disabled."
+
+        # Remove all WSL distributions
+        $distros = wsl --list --quiet
+        foreach ($distro in $distros) {
+            wsl --unregister $distro
+            Write-Host "Removed WSL distribution: $distro"
+        }
+
+        Write-Log "WSL has been uninstalled and all distributions have been removed."
+    } catch {
+        Write-Host "An error occurred during the WSL uninstallation process."
+        Write-Log "Error during WSL uninstallation: $_"
+    }
+}
+
 # Main script logic
 Write-Host "Welcome to the WSL Management Script"
 Write-Log "Script started."
@@ -80,6 +101,7 @@ Write-Host "Select the operations you want to perform (separate with commas):"
 Write-Host "1. List Mount Points with Low Storage"
 Write-Host "2. Configure wsl.conf for a distribution"
 Write-Host "3. Migrate a WSL distribution"
+Write-Host "4. Uninstall and Completely Remove WSL"
 $userChoices = Read-Host "Enter your choices"
 
 # Convert user input into an array of choices
@@ -109,6 +131,12 @@ if ($choices -contains 3) {
     $distroName = Read-Host "Enter the WSL distribution name to migrate"
     $newLocation = Read-Host "Enter the new location for the WSL distribution"
     Move-WSLDistro -distroName $distroName -newLocation $newLocation
+}
+
+# Check if choice 4 is selected
+if ($choices -contains 4) {
+    Write-Host "Uninstalling and completely removing WSL..."
+    Uninstall-WSL
 }
 
 Write-Host "WSL Management operations completed."
