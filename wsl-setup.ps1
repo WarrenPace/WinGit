@@ -1,85 +1,115 @@
-# DO NOT RUN WITH IDE, USE POWERSHELL TERMINAL
-param (
-    [string]$Flag
-)
+# Check if running as Administrator
+if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Host "This script must be run as an Administrator. Please rerun the script in an elevated context."
+    exit
+}
 
-# Define variables
-$distroName = "Ubuntu-22.04"
-$newLocation = "J:\ubu"
-$exportPath = "$newLocation\$distroName.tar"
-$logFile = "$newLocation\WSL_Setup_Log.txt"
+# Check if running in PowerShell ISE
+if ($host.Name -eq "Windows PowerShell ISE Host") {
+    Write-Host "This script is not designed to run in PowerShell ISE. Please run it in a standard PowerShell console."
+    exit
+}
 
+# Ensure required PowerShell modules are installed
+$requiredModules = @('WindowsSubsystemForLinux', 'PowerShellGet')
+foreach ($module in $requiredModules) {
+    if (-not (Get-Module -ListAvailable -Name $module)) {
+        Install-Module -Name $module -Force -Scope CurrentUser
+    }
+}
+
+# Function to write logs to a file
 function Write-Log {
-    Param ([string]$message)
-    $logEntry = "$((Get-Date).ToString()) : $message"
-    $logEntry | Out-File $logFile -Append
-    Write-Host $logEntry
+    param (
+        [string]$Message
+    )
+    $logPath = "WSL_Management_Log.txt"
+    Add-Content -Path $logPath -Value "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss'): $Message"
 }
 
-function Get-WSLStatus {
-    Param ([string]$distroName, [string]$statusCheck, [int]$timeout)
-    $startTime = Get-Date
-    while ($true) {
-        $currentStatus = wsl --list --quiet | Select-String $distroName
-        if ($statusCheck -eq "installed" -and $currentStatus) { break }
-        if ($statusCheck -eq "unregistered" -and -not $currentStatus) { break }
-        Start-Sleep -Seconds 5
-        $elapsedTime = (Get-Date) - $startTime
-        if ($elapsedTime.TotalSeconds -gt $timeout) {
-            throw "Timeout reached while waiting for WSL $statusCheck status."
-        }
+# Function to List Mount Points with Low Storage
+function Get-MountPoints {
+    Get-PSDrive -PSProvider FileSystem | Where-Object { $_.Free -lt 10GB } | Format-Table Name, Used, Free -AutoSize
+}
+
+# Function to Configure wsl.conf with options to exclude mount points
+function Set-WSLConf {
+    Param ([string]$distroName, [string[]]$excludeMountPoints)
+    $wslConfigPath = "/etc/wsl.conf"
+    $excludeOptions = $excludeMountPoints -join ","
+    $configContent = @"
+[automount]
+root = /mnt/
+options = "metadata,umask=22,fmask=11"
+exclude = "$excludeOptions"
+"@
+    wsl -d $distroName sh -c "echo '$configContent' > $wslConfigPath"
+    Write-Host "wsl.conf configured successfully for $distroName."
+    Write-Log "Configured wsl.conf for $distroName with excluded mount points: $excludeOptions"
+}
+
+# Function to Facilitate Migration
+function Move-WSLDistro {
+    Param ([string]$distroName, [string]$newLocation)
+    if ($newLocation -match '^[Cc]:\\') {
+        Write-Host "Migration to C: drive is not allowed."
+        Write-Log "Attempted migration of $distroName to C: drive, which is not permitted."
+        return
     }
-}
 
-# Create log file
-if (-not (Test-Path $logFile)) {
-    New-Item -ItemType File -Path $logFile
-}
-Write-Log "Starting WSL setup script for $distroName."
-
-if ($Flag -eq "--uninstall") {
-    # Uninstall logic
+    $exportPath = "$newLocation\$distroName.tar"
     try {
-        Write-Log "Unregistering and uninstalling $distroName."
-        wsl --unregister $distroName
-        Write-Log "$distroName unregistered successfully."
-        # Additional cleanup if needed
-    } catch {
-        Write-Log "Error occurred during uninstallation: $_"
-        exit
-    }
-} else {
-    # Install and setup logic
-    try {
-        Write-Log "Installing $distroName."
-        wsl --install -d $distroName
-        Get-WSLStatus -distroName $distroName -statusCheck "installed" -timeout 300
-        Write-Log "$distroName installed successfully."
-
-        Write-Log "Exporting $distroName to $exportPath."
         wsl --export $distroName $exportPath
-        Write-Log "Exported successfully."
-
-        Write-Log "Unregistering $distroName."
         wsl --unregister $distroName
-        Write-Log "$distroName unregistered successfully."
-
-        if (-not (Test-Path $newLocation)) {
-            Write-Log "Creating new directory at $newLocation."
-            New-Item -ItemType Directory -Path $newLocation
-        }
-
-        Write-Log "Importing $distroName to $newLocation."
         wsl --import $distroName $newLocation $exportPath
-        Write-Log "Imported successfully."
-
-        Write-Log "Cleaning up exported tar file."
         Remove-Item $exportPath
-        Write-Log "Clean up completed."
+        Write-Host "$distroName has been migrated to $newLocation."
+        Write-Log "Migrated $distroName to $newLocation."
     } catch {
-        Write-Log "Error occurred: $_"
-        exit
+        Write-Host "An error occurred during migration."
+        Write-Log "Error during migration: $_"
     }
 }
 
-Write-Log "$distroName operation completed successfully."
+# Main script logic
+Write-Host "Welcome to the WSL Management Script"
+Write-Log "Script started."
+
+# Display menu and get user choices
+Write-Host "Select the operations you want to perform (separate with commas):"
+Write-Host "1. List Mount Points with Low Storage"
+Write-Host "2. Configure wsl.conf for a distribution"
+Write-Host "3. Migrate a WSL distribution"
+$userChoices = Read-Host "Enter your choices"
+
+# Convert user input into an array of choices
+$choices = $userChoices.Split(',').Trim() | ForEach-Object { [int]$_ }
+
+# Check if choice 1 is selected
+if ($choices -contains 1) {
+    Write-Host "Listing mount points with low storage:"
+    Get-MountPoints
+}
+
+# Check if choice 2 is selected
+if ($choices -contains 2) {
+    # List available Linux distributions
+    $distros = wsl --list --online | Select-Object -Skip 1
+    Write-Host "Available Linux Distributions:"
+    $distros | ForEach-Object { Write-Host "$($_)" }
+    $distroSelection = Read-Host "Select a distribution by number"
+    $selectedDistro = $distros[$distroSelection]
+
+    $excludeMountPoints = Read-Host "Enter the mount points to exclude (comma-separated)"
+    Set-WSLConf -distroName $selectedDistro -excludeMountPoints $excludeMountPoints.Split(',')
+}
+
+# Check if choice 3 is selected
+if ($choices -contains 3) {
+    $distroName = Read-Host "Enter the WSL distribution name to migrate"
+    $newLocation = Read-Host "Enter the new location for the WSL distribution"
+    Move-WSLDistro -distroName $distroName -newLocation $newLocation
+}
+
+Write-Host "WSL Management operations completed."
+Write-Log "Script completed."

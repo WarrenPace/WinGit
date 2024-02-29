@@ -1,0 +1,66 @@
+# Check if running as Administrator
+if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Host "This script must be run as an Administrator. Please rerun the script in an elevated context."
+    exit
+}
+
+# Check if running in PowerShell ISE
+if ($host.Name -eq "Windows PowerShell ISE Host") {
+    Write-Host "This script is not designed to run in PowerShell ISE. Please run it in a standard PowerShell console."
+    exit
+}
+
+# Ensure required PowerShell modules are installed
+$requiredModules = @('WindowsSubsystemForLinux', 'PowerShellGet')
+foreach ($module in $requiredModules) {
+    if (-not (Get-Module -ListAvailable -Name $module)) {
+        Install-Module -Name $module -Force -Scope CurrentUser
+    }
+}
+
+# Function definitions (List-MountPoints, Configure-WSLConf, Migrate-WSLDistro, Write-Log) go here...
+# [Function definitions are omitted in this response for brevity]
+
+# Main script logic
+Write-Host "Welcome to the WSL Management Script"
+Write-Log "Script started."
+
+$actions = @(
+    "List mount points with low storage",
+    "Configure wsl.conf for a Linux distribution",
+    "Migrate a WSL distribution to a new location"
+)
+
+# Display options
+Write-Host "Please select the actions you want to perform (separated by commas):"
+for ($i = 0; $i -lt $actions.Length; $i++) {
+    Write-Host "$i - $($actions[$i])"
+}
+$userSelections = Read-Host "Enter your choices"
+
+# Parse user selections
+$selectedActions = $userSelections.Split(',') | ForEach-Object { [int]$_ }
+
+# Execute selected actions
+foreach ($action in $selectedActions) {
+    switch ($action) {
+        0 { 
+            # List Mount Points with Low Storage
+            Write-Host "Listing mount points with low storage:"
+            List-MountPoints
+        }
+        1 { 
+            # Configure wsl.conf
+            # [User prompts and function call for Configure-WSLConf]
+        }
+        2 { 
+            # Migrate WSL Distribution
+            # [User prompts and function call for Migrate-WSLDistro]
+        }
+    }
+}
+
+Write-Host "WSL Management operations completed."
+Write-Log "Script completed."
+
+# DO NOT RUN WITH IDE, USE POWERSHELL TERMINAL
