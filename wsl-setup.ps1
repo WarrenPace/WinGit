@@ -70,7 +70,7 @@ Get-MountPoints
 # List available Linux distributions
 $distros = wsl --list --online | Select-Object -Skip 1
 Write-Host "Available Linux Distributions:"
-$distros | ForEach-Object { $index = 0 } { Write-Host "$($index++) - $_" }
+$distros | ForEach-Object { Write-Host "$($_.Name)" }
 $distroSelection = Read-Host "Select a distribution by number"
 $selectedDistro = $distros[$distroSelection]
 
