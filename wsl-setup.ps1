@@ -6,6 +6,10 @@ foreach ($module in $requiredModules) {
     }
 }
 
+# Import missing modules
+Import-Module -Name Microsoft.PowerShell.Management
+Import-Module -Name Microsoft.PowerShell.Utility
+
 # Function to write logs to a file
 function Write-Log {
     param (
@@ -76,7 +80,7 @@ $choices = $userChoices.Split(',').Trim() | ForEach-Object { [int]$_ }
 # Check if choice 1 is selected
 if ($choices -contains 1) {
     Write-Host "Listing mount points with low storage:"
-    List-MountPoints
+    Get-MountPoints
 }
 
 # Check if choice 2 is selected
@@ -84,19 +88,19 @@ if ($choices -contains 2) {
     # List available Linux distributions
     $distros = wsl --list --online | Select-Object -Skip 1
     Write-Host "Available Linux Distributions:"
-    $distros | ForEach-Object { $i = 0 } { Write-Host "$($i++) - $_" }
+    $distros | ForEach-Object { Write-Host "$($_)" }
     $distroSelection = Read-Host "Select a distribution by number"
     $selectedDistro = $distros[$distroSelection]
 
     $excludeMountPoints = Read-Host "Enter the mount points to exclude (comma-separated)"
-    Configure-WSLConf -distroName $selectedDistro -excludeMountPoints $excludeMountPoints.Split(',')
+    Set-WSLConf -distroName $selectedDistro -excludeMountPoints $excludeMountPoints.Split(',')
 }
 
 # Check if choice 3 is selected
 if ($choices -contains 3) {
     $distroName = Read-Host "Enter the WSL distribution name to migrate"
     $newLocation = Read-Host "Enter the new location for the WSL distribution"
-    Migrate-WSLDistro -distroName $distroName -newLocation $newLocation
+    Move-WSLDistro -distroName $distroName -newLocation $newLocation
 }
 
 Write-Host "WSL Management operations completed."
