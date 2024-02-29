@@ -1,10 +1,10 @@
 # Function to List Mount Points with Low Storage
-function List-MountPoints {
+function Get-MountPoints {
     Get-PSDrive -PSProvider FileSystem | Where-Object { $_.Free -lt 10GB } | Format-Table Name, Used, Free -AutoSize
 }
 
 # Function to Configure wsl.conf
-function Configure-WSLConf {
+function Set-WSLConf {
     Param ([string]$distroName)
     $wslConfigPath = "/etc/wsl.conf"
     $configContent = @"
@@ -17,7 +17,7 @@ options = "metadata,umask=22,fmask=11"
 }
 
 # Function to Facilitate Migration
-function Migrate-WSLDistro {
+function Move-WSLDistro {
     Param ([string]$distroName, [string]$newLocation)
     $exportPath = "$newLocation\$distroName.tar"
     wsl --export $distroName $exportPath
