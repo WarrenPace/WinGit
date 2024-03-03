@@ -1,3 +1,5 @@
+# v1/wsl-setup.ps1
+
 # Relaunch the script with administrative rights if not already running as an administrator
 if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     try {
