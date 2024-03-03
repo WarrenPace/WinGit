@@ -1,5 +1,6 @@
 # WSLManagement.ps1
-
+. .\Logger.ps1
+Initialize-Logger
 # Check for administrative rights
 . .\Check-Admin.ps1
 
