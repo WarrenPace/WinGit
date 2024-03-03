@@ -1,0 +1,48 @@
+2024-03-02 20:57:20: Installing module: WindowsSubsystemForLinux
+2024-03-02 20:57:23: WindowsSubsystemForLinux installed successfully.
+2024-03-02 20:57:26: PowerShellGet is already installed. Checking for updates.
+2024-03-02 20:57:27: PowerShellGet updated successfully.
+2024-03-02 20:57:29: Installing module: System.Collections.Specialized.OrderedDictionary
+2024-03-02 20:57:31: System.Collections.Specialized.OrderedDictionary installed successfully.
+2024-03-02 20:57:36: Selected main mount drive: c
+2024-03-02 20:57:38: Exclusion list: 
+2024-03-02 20:57:38: Operation aborted: Insufficient space on c.
+2024-03-02 20:57:38: Script initialized
+2024-03-02 21:03:06: Installing module: WindowsSubsystemForLinux
+2024-03-02 21:03:08: WindowsSubsystemForLinux installed successfully.
+2024-03-02 21:03:09: PowerShellGet is already installed. Checking for updates.
+2024-03-02 21:03:10: PowerShellGet updated successfully.
+2024-03-02 21:03:12: Installing module: System.Collections.Specialized.OrderedDictionary
+2024-03-02 21:03:15: System.Collections.Specialized.OrderedDictionary installed successfully.
+2024-03-02 21:08:56: Script initialized
+2024-03-02 21:08:57: Installing module: WindowsSubsystemForLinux
+2024-03-02 21:08:58: WindowsSubsystemForLinux installed successfully.
+2024-03-02 21:09:00: PowerShellGet is already installed. Checking for updates.
+2024-03-02 21:09:00: PowerShellGet updated successfully.
+2024-03-02 21:09:03: Installing module: System.Collections.Specialized.OrderedDictionary
+2024-03-02 21:09:04: System.Collections.Specialized.OrderedDictionary installed successfully.
+2024-03-02 21:09:10: Invalid drive selection attempt: Initialize-Logger
+2024-03-02 21:09:13: Selected main mount drive: c
+2024-03-02 21:09:14: Exclusion list: 
+2024-03-02 21:09:14: Operation aborted: Insufficient space on c.
+2024-03-02 21:09:14: Script initialized
+2024-03-02 21:11:42: Installing module: WindowsSubsystemForLinux
+2024-03-02 21:11:45: WindowsSubsystemForLinux installed successfully.
+2024-03-02 21:11:48: PowerShellGet is already installed. Checking for updates.
+2024-03-02 21:11:48: PowerShellGet updated successfully.
+2024-03-02 21:11:52: Installing module: System.Collections.Specialized.OrderedDictionary
+2024-03-02 21:11:52: System.Collections.Specialized.OrderedDictionary installed successfully.
+2024-03-02 21:15:03: Logger initialized
+2024-03-02 21:15:49: Logger initialized
+2024-03-02 21:15:49: Logger initialized
+2024-03-02 21:16:00: Logger initialized
+2024-03-02 21:16:00: Logger initialized
+2024-03-02 21:16:03: Logger initialized
+2024-03-02 21:16:03: Installing module: WindowsSubsystemForLinux
+2024-03-02 21:16:06: WindowsSubsystemForLinux installed successfully.
+2024-03-02 21:16:08: PowerShellGet is already installed. Checking for updates.
+2024-03-02 21:16:09: PowerShellGet updated successfully.
+2024-03-02 21:16:11: Installing module: System.Collections.Specialized.OrderedDictionary
+2024-03-02 21:16:12: System.Collections.Specialized.OrderedDictionary installed successfully.
+2024-03-02 21:16:13: Logger initialized
+2024-03-02 21:16:13: Logger initialized
