@@ -1,17 +1,13 @@
-### main.ps1 ###
+# main.ps1
+$scriptPath = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
 
-# Relaunch the script with administrative rights if not already running as an administrator
-. .\Ensure-Admin.ps1
-
-# Ensure required PowerShell modules are installed
-. .\Ensure-Modules.ps1
-
-# Importing functions
-. .\Write-Log.ps1
-. .\Get-MountPoints.ps1
-. .\Set-WSLConf.ps1
-. .\Move-WSLDistro.ps1
-. .\Uninstall-WSL.ps1
+. "$scriptPath\Write-Log.ps1"
+. "$scriptPath\Ensure-Admin.ps1"
+. "$scriptPath\Ensure-Modules.ps1"
+. "$scriptPath\Get-MountPoints.ps1"
+. "$scriptPath\Set-WSLConf.ps1"
+. "$scriptPath\Move-WSLDistro.ps1"
+. "$scriptPath\Uninstall-WSL.ps1"
 
 # Main script logic
 Write-Host "Welcome to the WSL Management Script"

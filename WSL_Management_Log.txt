@@ -1,0 +1,7 @@
+2024-03-03 19:06:00: Script started.
+2024-03-03 19:06:19: Script completed.
+2024-03-03 19:08:55: Script started.
+2024-03-03 19:17:16: Script started.
+2024-03-03 19:17:19: Error during WSL uninstallation: The requested operation requires elevation.
+
+2024-03-03 19:17:19: Script completed.
